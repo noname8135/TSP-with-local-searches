@@ -71,7 +71,7 @@ bool if_good_neighbor(int* ori,int c1_pos,int c2_pos){
 }
 
 int* get_neighbor(int* a){
-	int* neighbor;
+	int* neighbor; 
 	int m=rand()%city_count, n=rand()%city_count,i,j;
 	if(m>n){
 		i=m; m=n; n=i;
