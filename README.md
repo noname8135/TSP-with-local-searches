@@ -1,4 +1,3 @@
-# metaheu_hw1
 
 (eil51: 426, lin105: 14379, pcb442: 50778) best cases;
 
@@ -24,3 +23,8 @@ acceptance criterion:
 
 Reference:
 http://en.wikipedia.org/wiki/Hill_climbing
+
+
+
+before deciding the temperature function, I made a little observation about how many iteration sa will run. It turns out to be 
+around 90~140.

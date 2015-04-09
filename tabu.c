@@ -4,7 +4,6 @@
 #include <time.h>
 #include <stdbool.h>
 #include <math.h>
-#include <time.h>
 
 #define DEBUG 0
 
@@ -39,6 +38,8 @@ int get_nearest(int a,int city_num){	//get nearest neighbor of city a
 */
 
 int* gen_neighbor(int* a,int i, int j){	//swap ith ,jth city of a and return
+	if(DEBUG)
+		printf("gen_start\n");
 	int tmp;
 	int* neighbor=(int*)malloc(sizeof(int)*city_count);
 	for(tmp=0;tmp<city_count;tmp++){
@@ -49,6 +50,8 @@ int* gen_neighbor(int* a,int i, int j){	//swap ith ,jth city of a and return
 		else
 			neighbor[tmp]=a[tmp];
 	}
+	if(DEBUG)
+		printf("gen_end\n");
 	return neighbor;
 }
 
@@ -61,20 +64,22 @@ int line_dis_between_city(int* a,int pos){
 
 int neighbor_dis(int* a,int p1,int p2){
 	int left,right,ans;
-	if(p1==0 && p2==city_count-1){
-		left=p1; p1=p2; p2=left;
-	}
 	left = p1-1 >=0 ? p1-1 : city_count-1;
-	right = p1+1 < city_count ? p1+1 : 0;
-	if(right == p2)
+	if(p1>p2){
+		left = p1; p1=p2; p2=left;
+	}
+	if(p1+1==p2)
 		right=p1;
+	else
+		right = p1+1 < city_count ? p1+1 : 0;
 	int tmp[3];
 	tmp[0]=a[left];  tmp[1]=a[p2]; tmp[2]=a[right];
 	ans = line_dis_between_city(tmp,1);
-
-	left = p2-1 >=0 ? p2-1 : city_count-1;
-	if(left==p1)
+	if(p1+1==p2)
 		left = p2;
+	else
+		left = p2-1 >=0 ? p2-1 : city_count-1;
+
 
 	right = p2+1 < city_count ? p2+1 : 0;
 	tmp[0] = a[left]; tmp[1] = a[p1]; tmp[2] = a[right];
@@ -94,12 +99,46 @@ bool if_good_neighbor(int* ori,int c1_pos,int c2_pos){
 
 int* get_neighbor(int* a){
 	int* neighbor; 
-	int i,j,ori_base,tmp_dis;
-	for(i=0;i<city_count-1;i++){
+	int m=rand()%city_count, n=rand()%city_count,i,j,ori_base,tmp_dis;
+	if(m>n){
+		i=m; m=n; n=i;
+	}
+	if(DEBUG)
+		printf("m=%d n=%d\n", m,n);
+	for(i=m;i<n;i++){
+		ori_base = line_dis_between_city(a,i);
+		for(j=n;j<city_count;j++){
+			if(DEBUG)
+				printf("ori=%d neighbor_dis=%d good:%d i=%d j=%d ai=%d aj=%d\n",ori_base+line_dis_between_city(a,j),neighbor_dis(a,i,j),if_good_neighbor(a,i,j),i,j,a[i],a[j]);
+			if(ori_base+line_dis_between_city(a,j)>(tmp_dis=neighbor_dis(a,i,j)))
+				return gen_neighbor(a,i,j);
+		}
+	}
+	for(i=n;i<city_count-1;i++){
 		ori_base = line_dis_between_city(a,i);
 		for(j=i+1;j<city_count;j++){
 			if(DEBUG)
-				printf("ori=%d neighbor_dis=%d good:%d i=%d j=%d\n",ori_base+line_dis_between_city(a,j),neighbor_dis(a,i,j),if_good_neighbor(a,i,j),i,j);
+				printf("ori=%d neighbor_dis=%d 2 good:%d i=%d j=%d ai=%d aj=%d\n",ori_base+line_dis_between_city(a,j),neighbor_dis(a,i,j),if_good_neighbor(a,i,j),i,j,a[i],a[j]);
+			if(ori_base+line_dis_between_city(a,j)>(tmp_dis=neighbor_dis(a,i,j)))
+				return gen_neighbor(a,i,j);
+		}
+	}
+
+	for(i=m;i<n;i++){
+		ori_base = line_dis_between_city(a,i);
+		for(j=n;j>i;j--){
+			if(DEBUG)
+				printf("ori=%d neighbor_dis=%d 3 good:%d i=%d j=%d ai=%d aj=%d\n",ori_base+line_dis_between_city(a,j),neighbor_dis(a,i,j),if_good_neighbor(a,i,j),i,j,a[i],a[j]);
+			if(ori_base+line_dis_between_city(a,j)>(tmp_dis=neighbor_dis(a,i,j)))
+				return gen_neighbor(a,i,j);
+		}
+	}
+
+	for(i=m-1;i>=0;i--){
+		ori_base = line_dis_between_city(a,i);
+		for(j=n;j>i;j--){
+			if(DEBUG)
+				printf("ori=%d neighbor_dis=%d 4 good:%d i=%d j=%d ai=%d aj=%d\n",ori_base+line_dis_between_city(a,j),neighbor_dis(a,i,j),if_good_neighbor(a,i,j),i,j,a[i],a[j]);
 			if(ori_base+line_dis_between_city(a,j)>(tmp_dis=neighbor_dis(a,i,j)))
 				return gen_neighbor(a,i,j);
 		}
@@ -110,7 +149,6 @@ int* get_neighbor(int* a){
 }
 
 int* get_start_state(){
-	srand(time(NULL));
 	int* start_state = (int*)malloc(sizeof(int)*city_count);
 	bool* gened = (bool*)malloc(sizeof(bool)*city_count);
 	memset(gened,0,sizeof(bool)*city_count);
@@ -145,7 +183,7 @@ void hill(){
 		if((now_state = get_neighbor(now_state)) == NULL)
 			break;
 	}
-	printf("Final distance:%d, ",ans);
+	printf("Final distance:%d\n",ans);
 	/*
 	printf("%d\n",route_distance(now_state));
 	for(i=0;i<city_count;i++)
@@ -162,7 +200,7 @@ int main(int argc,char** argv){
 	float x,y;
 	FILE *f;
 	if(argc<2){
-		printf("format: ./hill filename\nfiles => eil51.tsp, lin105.tsp, pcb442.tsp\n");
+		printf("format: ./tabu filename\nfiles => eil51.tsp, lin105.tsp, pcb442.tsp\n");
 		exit(0);
 	}
 	f = fopen(argv[1],"r");
