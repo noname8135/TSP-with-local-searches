@@ -10,107 +10,66 @@
 
 int city[442][2]; //city[id][0] = x of city id, city[id][1] = y of city id, 
 int city_count;
+int city_dis[442][442]; //distance between city, city_dis[id1][id2] = distance(id1,id2)
 
 int distance(int a, int b){
 	int x_dis = city[a][0]-city[b][0];
 	int y_dis = city[a][1]-city[b][1];
-	return sqrt(x_dis*x_dis+y_dis*y_dis);
+	return round(sqrt(x_dis*x_dis+y_dis*y_dis));
 }
 
 int route_distance(int* a){
 	int i,tot_dis = 0;
 	for(i=0;i<city_count-1;i++)
-		tot_dis += distance(a[i],a[i+1]);
-	tot_dis += distance(a[0],a[city_count-1]);
+		tot_dis += city_dis[a[i]][a[i+1]];
+	tot_dis += city_dis[a[0]][a[city_count-1]];
 	return tot_dis;
 }
-/*
-int get_nearest(int a,int city_num){	//get nearest neighbor of city a
-	int i,nearest_id,min_dis=999999999;
-	float dis;
-	bool visited[442] = {0};
-	for(i=0;i<city_num;i++){
-		if(!visited[i] && (dis=distance(a,i)) < min_dis){
-			min_dis = dis, nearest_id = i;
-		}
-	}
-	return nearest_id;
-}
-*/
 
-int* gen_neighbor(int* a,int i, int j){	//swap ith ,jth city of a and return
-	int tmp;
+int* gen_neighbor(int* a,int i, int j){	//swap the order of ith~jth city of array a and return
+	int tmp,k;
 	int* neighbor=(int*)malloc(sizeof(int)*city_count);
-	for(tmp=0;tmp<city_count;tmp++){
-		if(tmp==i)
-			neighbor[tmp]=a[j];
-		else if(tmp==j)
-			neighbor[tmp]=a[i];
-		else
-			neighbor[tmp]=a[tmp];
+	if(i>j){
+		tmp = i; i = j; j = tmp;
 	}
+	for(tmp=0;tmp<i;tmp++)
+		neighbor[tmp]=a[tmp];
+	for(tmp=j+1;tmp<city_count;tmp++)
+		neighbor[tmp]=a[tmp];
+	for(k=0;k<=j-i;k++)
+		neighbor[i+k]=a[j-k];
+	free(a);
 	return neighbor;
 }
 
-int line_dis_between_city(int* a,int pos){
-	int left,right;
-	left = pos-1 >=0 ? pos-1 : city_count-1;
-	right = pos+1 < city_count ? pos+1 : 0;
-	return distance(a[pos],a[left])+distance(a[pos],a[right]);
-}
+int neighbor_dis(int* a,int p1,int p2, int ori_part){
+	int p1_left,p2_right,tmp,ans;
 
-int neighbor_dis(int* a,int p1,int p2){
-	int left,right,ans;
-	if(p1==0 && p2==city_count-1){
-		left=p1; p1=p2; p2=left;
+	if(p1>p2){
+		tmp=p1; p1=p2; p2=tmp;
 	}
-	left = p1-1 >=0 ? p1-1 : city_count-1;
-	right = p1+1 < city_count ? p1+1 : 0;
-	if(right == p2)
-		right=p1;
-	int tmp[3];
-	tmp[0]=a[left];  tmp[1]=a[p2]; tmp[2]=a[right];
-	ans = line_dis_between_city(tmp,1);
-
-	left = p2-1 >=0 ? p2-1 : city_count-1;
-	if(left==p1)
-		left = p2;
-
-	right = p2+1 < city_count ? p2+1 : 0;
-	tmp[0] = a[left]; tmp[1] = a[p1]; tmp[2] = a[right];
-	return ans + line_dis_between_city(tmp,1);
-}
-
-bool if_good_neighbor(int* ori,int c1_pos,int c2_pos){	
-	//compare distance of original path and the path after exchanging city1 and city2
-	int ori_path,new_path;
-	int* neighbor=gen_neighbor(ori,c1_pos,c2_pos);
-	ori_path = line_dis_between_city(ori,c1_pos)+line_dis_between_city(ori,c2_pos);
-	new_path = line_dis_between_city(neighbor,c1_pos)+line_dis_between_city(neighbor,c2_pos);
-	if(DEBUG)
-		printf("if_good_neighbor ori_path:%d new_path:%d\n", ori_path,new_path);
-	return (new_path<ori_path?1:0);
+	p1_left = (p1==0?city_count-1:p1-1);
+	p2_right = (p2==city_count-1?0:p2+1);
+	return city_dis[a[p1_left]][a[p2]]+city_dis[a[p2_right]][a[p1]] - ori_part;
 }
 
 int* get_neighbor(int* a){
-	int* neighbor; 
-	int i,j,ori_base,tmp_dis;
+	int i,j,j_right,k;
+	float ori_base;
 	for(i=0;i<city_count-1;i++){
-		ori_base = line_dis_between_city(a,i);
+		ori_base = i==0?city_dis[a[i]][a[city_count-1]]:city_dis[a[i]][a[i-1]];
 		for(j=i+1;j<city_count;j++){
-			if(DEBUG)
-				printf("ori=%d neighbor_dis=%d good:%d i=%d j=%d\n",ori_base+line_dis_between_city(a,j),neighbor_dis(a,i,j),if_good_neighbor(a,i,j),i,j);
-			if(ori_base+line_dis_between_city(a,j)>(tmp_dis=neighbor_dis(a,i,j)))
+			if (j-i>=city_count-2)
+				continue;
+			j_right = (j==city_count-1?0:j+1);
+			if(neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]])<0)
 				return gen_neighbor(a,i,j);
 		}
 	}
-	if(DEBUG)
-		printf("GET N success\n");
 	return NULL;
 }
 
 int* get_start_state(){
-	srand(time(NULL));
 	int* start_state = (int*)malloc(sizeof(int)*city_count);
 	bool* gened = (bool*)malloc(sizeof(bool)*city_count);
 	memset(gened,0,sizeof(bool)*city_count);
@@ -128,37 +87,22 @@ int* get_start_state(){
 	return start_state;
 }
 
-void hill(){
+int hill(){
 	int i,j,ans;
-	/*
-	int nearest,ans[443],ans_count=1,walker = rand()%100+1; //random start
-	visited[walker] = 1;
-	while(ans_count++ < visited_count){
-		nearest = get_nearest(walker,visited_count);
-	}*/
-	
 	int* now_state = get_start_state();
 	while(1){
-		if(DEBUG)
-			printf("route_distance:%d\n",route_distance(now_state));
 		ans=route_distance(now_state);
 		if((now_state = get_neighbor(now_state)) == NULL)
 			break;
 	}
-	printf("Final distance:%d, ",ans);
-	/*
-	printf("%d\n",route_distance(now_state));
-	for(i=0;i<city_count;i++)
-		printf("%d ",now_state[i]);
-	printf("\n");*/
-	return;
+	return ans;
 }
 
 int main(int argc,char** argv){
 	clock_t start=clock(), stop;
 	srand(time(NULL));
 	char line[70];
-	int jmp_counter = 6;
+	int jmp_counter = 6, i,j;
 	float x,y;
 	FILE *f;
 	if(argc<2){
@@ -177,11 +121,21 @@ int main(int argc,char** argv){
 		}
 		sscanf(line,"%*d %E %E",&x,&y);
 		city[city_count][0] = (int)x, city[city_count++][1] = (int)y;
+		for(i=0;i<city_count-1;i++)
+			city_dis[city_count-1][i] = city_dis[i][city_count-1] = distance(i,city_count-1);
 	}
-
-	hill();
-	if(DEBUG)
-		printf("main end!\n");
+	
+	int counter=20, tmp, min=9999999;
+	float tot=0;
+	while(counter--){
+		tmp=hill();
+		if(tmp<min){
+			min = tmp;
+		}
+		tot+=(float)tmp;
+		printf("Final distance: %d\n",tmp);
+	}
+	printf("min=%d avg=%f\n", min, tot/20);
 	stop=clock();
 	printf("total execution time: %f\n",(double)(stop-start)/(double)CLOCKS_PER_SEC);
 	return 0;
