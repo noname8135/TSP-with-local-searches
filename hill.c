@@ -29,9 +29,6 @@ int route_distance(int* a){
 int* gen_neighbor(int* a,int i, int j){	//swap the order of ith~jth city of array a and return
 	int tmp,k;
 	int* neighbor=(int*)malloc(sizeof(int)*city_count);
-	if(i>j){
-		tmp = i; i = j; j = tmp;
-	}
 	for(tmp=0;tmp<i;tmp++)
 		neighbor[tmp]=a[tmp];
 	for(tmp=j+1;tmp<city_count;tmp++)
@@ -44,7 +41,6 @@ int* gen_neighbor(int* a,int i, int j){	//swap the order of ith~jth city of arra
 
 int neighbor_dis(int* a,int p1,int p2, int ori_part){
 	int p1_left,p2_right,tmp,ans;
-
 	if(p1>p2){
 		tmp=p1; p1=p2; p2=tmp;
 	}
@@ -129,9 +125,8 @@ int main(int argc,char** argv){
 	float tot=0;
 	while(counter--){
 		tmp=hill();
-		if(tmp<min){
+		if(tmp<min)
 			min = tmp;
-		}
 		tot+=(float)tmp;
 		printf("Final distance: %d\n",tmp);
 	}

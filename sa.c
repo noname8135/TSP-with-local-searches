@@ -20,12 +20,12 @@ float accept_prob(float delta_e){
 }
 
 void cool(){
-	T = T*0.99999;
+	T = T*0.9999;
 	return ;
 }
 
 void reheat(){
-	 T+=reheat_cd/2;
+	 T+=reheat_cd*2;
 	 return ;
 }
 
@@ -85,8 +85,8 @@ int neighbor_dis(int* a,int p1,int p2, int ori_part){
 }
 
 int* get_neighbor(int* a){
-	int m=rand()%city_count, n=rand()%city_count,i,j,j_right;
-	float prob,ori_base,ori_path,new_path;
+	int m=rand()%city_count, n=rand()%city_count,i,j,j_right,tmp;
+	float prob,ori_base;
 	if(m>n){
 		i=m; m=n; n=i;
 	}
@@ -96,9 +96,9 @@ int* get_neighbor(int* a){
 			if (j-i>=city_count-2)
 				continue;
 			j_right = (j==city_count-1?0:j+1);
-			if(neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]])<0)
+			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))<0)
 				return gen_neighbor(a,i,j);
-			prob = accept_prob(ori_path-new_path);
+			prob = accept_prob(tmp);
 			if(if_pass_prob(prob))
 				return gen_neighbor(a,i,j);
 		}
@@ -110,9 +110,9 @@ int* get_neighbor(int* a){
 			if (j-i>=city_count-2)
 				continue;
 			j_right = (j==city_count-1?0:j+1);
-			if(neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]])<0)
+			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))<0)
 				return gen_neighbor(a,i,j);
-			prob = accept_prob(ori_path-new_path);
+			prob = accept_prob(tmp);
 			if(if_pass_prob(prob))
 				return gen_neighbor(a,i,j);
 		}
@@ -124,9 +124,9 @@ int* get_neighbor(int* a){
 			if (j-i>=city_count-2)
 				continue;
 			j_right = (j==city_count-1?0:j+1);
-			if(neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]])<0)
+			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))<0)
 				return gen_neighbor(a,i,j);
-			prob = accept_prob(ori_path-new_path);
+			prob = accept_prob(tmp);
 			if(if_pass_prob(prob))
 				return gen_neighbor(a,i,j);
 		}
@@ -206,15 +206,15 @@ int main(int argc,char** argv){
 		if(y<min_y){
 			min_y=y;
 		}
-		SCALE = 20.0 / (float)((max_x-min_x) + (max_y-min_y));
+		SCALE = 60.0 / (float)((max_x-min_x) + (max_y-min_y));
 		for(i=0;i<city_count-1;i++)
 			city_dis[city_count-1][i] = city_dis[i][city_count-1] = distance(i,city_count-1);
 	}
 	int counter=20, tmp, min=9999999;
 	float tot=0;
 	while(counter--){
-		T=300.0;
-		reheat_cd = 5;
+		T=10.0;
+		reheat_cd = 3;
 		tmp=hill();
 		if(tmp<min){
 			min = tmp;

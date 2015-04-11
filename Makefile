@@ -1,6 +1,6 @@
 all:
-	gcc hill.c -O3 -o hill
-	gcc sa.c -O3 -o sa
-	gcc tabu.c -O3 -o tabu
+	gcc hill.c -O3 -o hill -lm
+	gcc sa.c -O3 -o sa -lm
+	gcc tabu.c -O3 -o tabu -lm
 clean:
 	rm hill	sa tabu
