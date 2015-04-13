@@ -14,26 +14,8 @@ int reheat_cd;
 
 float accept_prob(float delta_e){
 	if(delta_e==0)
-		return 0;
-	float tmp = exp(delta_e*SCALE /T); // normalized the scale
-	return tmp;
-}
-
-void cool(){
-	T = T*0.9999;
-	return ;
-}
-
-void reheat(){
-	 T+=reheat_cd*2;
-	 return ;
-}
-
-bool if_pass_prob(float p){
-	int num = (int)(p*1000000);
-	if(rand()%1000000<num)
-		return 1;
-	return 0;
+		return rand()%2?1:0;
+	return exp(delta_e*SCALE /T); // normalized the scale;
 }
 
 float distance(int a, int b){
@@ -81,7 +63,7 @@ int neighbor_dis(int* a,int p1,int p2, int ori_part){
 	}
 	p1_left = (p1==0?city_count-1:p1-1);
 	p2_right = (p2==city_count-1?0:p2+1);
-	return city_dis[a[p1_left]][a[p2]]+city_dis[a[p2_right]][a[p1]] - ori_part;
+	return ori_part - city_dis[a[p1_left]][a[p2]] - city_dis[a[p2_right]][a[p1]] ;
 }
 
 int* get_neighbor(int* a){
@@ -96,10 +78,12 @@ int* get_neighbor(int* a){
 			if (j-i>=city_count-2)
 				continue;
 			j_right = (j==city_count-1?0:j+1);
-			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))<0)
+			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))>0)
 				return gen_neighbor(a,i,j);
+			else if(T==0.0)
+				continue;
 			prob = accept_prob(tmp);
-			if(if_pass_prob(prob))
+			if(rand()/(0.0+RAND_MAX) < prob)
 				return gen_neighbor(a,i,j);
 		}
 	}
@@ -110,10 +94,12 @@ int* get_neighbor(int* a){
 			if (j-i>=city_count-2)
 				continue;
 			j_right = (j==city_count-1?0:j+1);
-			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))<0)
+			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))>0)
 				return gen_neighbor(a,i,j);
+			else if(T==0.0)
+				continue;
 			prob = accept_prob(tmp);
-			if(if_pass_prob(prob))
+			if(rand()/(0.0+RAND_MAX) < prob)
 				return gen_neighbor(a,i,j);
 		}
 	}
@@ -124,10 +110,12 @@ int* get_neighbor(int* a){
 			if (j-i>=city_count-2)
 				continue;
 			j_right = (j==city_count-1?0:j+1);
-			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))<0)
+			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))>0)
 				return gen_neighbor(a,i,j);
+			else if(T==0.0)
+				continue;
 			prob = accept_prob(tmp);
-			if(if_pass_prob(prob))
+			if(rand()/(0.0+RAND_MAX) < prob)
 				return gen_neighbor(a,i,j);
 		}
 	}
@@ -158,13 +146,13 @@ int hill(){
 	while(1){
 		count++;
 		if(T<reheat_cd/2 && reheat_cd){
-			reheat();
+			T+=reheat_cd*0.5;	//reheat
 			reheat_cd--;
 		}
 		ans=route_distance(now_state);
 		if((now_state = get_neighbor(now_state)) == NULL)
 			break;
-		cool();
+		T = T*0.9999; //cool 
 	}
 	return ans;
 }
@@ -206,7 +194,7 @@ int main(int argc,char** argv){
 		if(y<min_y){
 			min_y=y;
 		}
-		SCALE = 60.0 / (float)((max_x-min_x) + (max_y-min_y));
+		SCALE = 180.0 / (float)((max_x-min_x) + (max_y-min_y));
 		for(i=0;i<city_count-1;i++)
 			city_dis[city_count-1][i] = city_dis[i][city_count-1] = distance(i,city_count-1);
 	}
@@ -214,11 +202,10 @@ int main(int argc,char** argv){
 	float tot=0;
 	while(counter--){
 		T=10.0;
-		reheat_cd = 3;
+		reheat_cd = 5;
 		tmp=hill();
-		if(tmp<min){
+		if(tmp<min)
 			min = tmp;
-		}
 		tot+=(float)tmp;
 		printf("Final distance: %d\n",tmp);
 	}
