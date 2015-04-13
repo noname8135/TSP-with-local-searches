@@ -13,36 +13,25 @@ int city_dis[442][442]; //distance between city, city_dis[id1][id2] = distance(i
 int** city; //city[id][0] = x of city id, city[id][1] = y of city id
 
 struct tabu {
-    int* city_route;                    /* key */
+    short* city_route;                    /* key */
     int tabu_cd;
     UT_hash_handle hh;         /* makes this structure hashable */
 };
 
 struct tabu *route_in_tabu = NULL;
 
-struct tabu *find_route(int* a) {
+struct tabu *find_route(short* a) {
     struct tabu *s=NULL;
-    HASH_FIND( hh, route_in_tabu, a, sizeof(int)*city_count, s );  /* s: output pointer */
+    HASH_FIND( hh, route_in_tabu, a, sizeof(short)*city_count, s );  /* s: output pointer */
     return s;
 }
 
-void print_tabu() {
-    struct tabu *s;
-    int i;
-    for(s=route_in_tabu; s != NULL; s=(struct tabu*)(s->hh.next)) {
-    	printf("TABU ");
-    	for(i=0;i<city_count;i++)
-    		printf("%d ",s->city_route[i]);
-        printf(" , cd %d\n", s->tabu_cd);
-    }
-}
-
-void add_tabu_route(int* new_route) {
+void add_tabu_route(short* new_route) {
     struct tabu *s = (struct tabu*)malloc(sizeof(struct tabu));
     int i;
 	  s->city_route = new_route;
       s->tabu_cd = city_count/5;
-      HASH_ADD_KEYPTR( hh,route_in_tabu,s->city_route, sizeof(int)*city_count, s );  /* id: name of key field */
+      HASH_ADD_KEYPTR( hh,route_in_tabu,s->city_route, sizeof(short)*city_count, s );  /* id: name of key field */
     return;
 }
 
@@ -52,13 +41,22 @@ void delete_route(struct tabu *a) {
     free(a);
 }
 
+void delete_all() {
+  struct tabu *current_user, *tmp;
+  HASH_ITER(hh, route_in_tabu, current_user, tmp) {
+  	free(current_user->city_route);
+    HASH_DEL(route_in_tabu,current_user);  /* delete it (users advances to next) */
+    free(current_user);            /* free it */
+  }
+}
+
 int distance(int a, int b){
 	int x_dis = city[a][0]-city[b][0];
 	int y_dis = city[a][1]-city[b][1];
 	return round(sqrt(x_dis*x_dis+y_dis*y_dis));
 }
 
-int route_distance(int* a){
+int route_distance(short* a){
 	int i,tot_dis = 0;
 	for(i=0;i<city_count-1;i++)
 		tot_dis += city_dis[a[i]][a[i+1]];
@@ -66,9 +64,9 @@ int route_distance(int* a){
 	return tot_dis;
 }
 
-int* gen_neighbor(int* a,int i, int j){	//swap the order of ith~jth city of array a and return
+short* gen_neighbor(short* a,int i, int j){	//swap the order of ith~jth city of array a and return
 	int tmp,k;
-	int* neighbor=(int*)malloc(sizeof(int)*city_count);
+	short* neighbor=(short*)malloc(sizeof(short)*city_count);
 	for(tmp=0;tmp<i;tmp++)
 		neighbor[tmp]=a[tmp];
 	for(tmp=j+1;tmp<city_count;tmp++)
@@ -78,7 +76,7 @@ int* gen_neighbor(int* a,int i, int j){	//swap the order of ith~jth city of arra
 	return neighbor;
 }
 
-int neighbor_dis(int* a,int p1,int p2, int ori_part){
+int neighbor_dis(short* a,int p1,int p2, int ori_part){
 	int p1_left,p2_right,tmp,ans;
 	if(p1>p2){
 		tmp=p1; p1=p2; p2=tmp;
@@ -88,11 +86,11 @@ int neighbor_dis(int* a,int p1,int p2, int ori_part){
 	return city_dis[a[p1_left]][a[p2]]+city_dis[a[p2_right]][a[p1]] - ori_part;
 }
 
-int* get_neighbor(int* a){
+short* get_neighbor(short* a){
 	int i,j,j_right,min_route_dis = 999999,tmp_dis;
 	float ori_base;
 	struct tabu *s=NULL;
-	int* neighbor,*best;
+	short* neighbor,*best;
 	for(i=0;i<city_count-1;i++){
 		ori_base = i==0?city_dis[a[i]][a[city_count-1]]:city_dis[a[i]][a[i-1]];
 		for(j=i+1;j<city_count;j++){
@@ -121,16 +119,15 @@ int* get_neighbor(int* a){
 	return a;
 }
 
-int* get_start_state(){
-	int* start_state = (int*)malloc(sizeof(int)*city_count);
+short* get_start_state(){
+	short* start_state = (short*)malloc(sizeof(short)*city_count);
 	bool* gened = (bool*)malloc(sizeof(bool)*city_count);
 	memset(gened,0,sizeof(bool)*city_count);
 	int gen_count = 0,gen_id;
 	while(gen_count<city_count){
 		gen_id = rand()%city_count;
 		while(gened[gen_id]){
-			gen_id++;
-			if(gen_id==city_count)
+			if(++gen_id==city_count)
 				gen_id = 0;
 		}
 		gened[gen_id] = 1;
@@ -140,12 +137,16 @@ int* get_start_state(){
 }
 
 int hill(){
-	int i,j,ans,best=999999,loop_count=200000;
-	int* now_state = get_start_state();
+	int i,j,ans,best=999999,loop_count=35000000;
+	short* now_state = get_start_state();
 	while(--loop_count){
+		if(loop_count%1000000==0)
+			HASH_CLEAR(hh,route_in_tabu);
 		ans=route_distance(now_state);
-		if(ans<best)
+		if(ans<best){
 			best=ans;
+			printf("%d\n",best);
+		}
 		if((now_state = get_neighbor(now_state)) == NULL)
 			break;
 	}

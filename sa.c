@@ -80,8 +80,6 @@ int* get_neighbor(int* a){
 			j_right = (j==city_count-1?0:j+1);
 			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))>0)
 				return gen_neighbor(a,i,j);
-			else if(T==0.0)
-				continue;
 			prob = accept_prob(tmp);
 			if(rand()/(0.0+RAND_MAX) < prob)
 				return gen_neighbor(a,i,j);
@@ -96,8 +94,6 @@ int* get_neighbor(int* a){
 			j_right = (j==city_count-1?0:j+1);
 			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))>0)
 				return gen_neighbor(a,i,j);
-			else if(T==0.0)
-				continue;
 			prob = accept_prob(tmp);
 			if(rand()/(0.0+RAND_MAX) < prob)
 				return gen_neighbor(a,i,j);
@@ -112,8 +108,6 @@ int* get_neighbor(int* a){
 			j_right = (j==city_count-1?0:j+1);
 			if((tmp=neighbor_dis(a,i,j,ori_base+city_dis[a[j]][a[j_right]]))>0)
 				return gen_neighbor(a,i,j);
-			else if(T==0.0)
-				continue;
 			prob = accept_prob(tmp);
 			if(rand()/(0.0+RAND_MAX) < prob)
 				return gen_neighbor(a,i,j);
@@ -146,13 +140,15 @@ int hill(){
 	while(1){
 		count++;
 		if(T<reheat_cd/2 && reheat_cd){
-			T+=reheat_cd*0.5;	//reheat
+			T+=reheat_cd/2;	//reheat
 			reheat_cd--;
 		}
 		ans=route_distance(now_state);
 		if((now_state = get_neighbor(now_state)) == NULL)
 			break;
 		T = T*0.9999; //cool 
+		if(T<=0.000001)
+			break;
 	}
 	return ans;
 }

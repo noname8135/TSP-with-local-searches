@@ -3,5 +3,5 @@
 
 for (( i=1; i<=20; i++ ))
 do
-	./tabu $1
+	./tabu $1 >> $2
 done
