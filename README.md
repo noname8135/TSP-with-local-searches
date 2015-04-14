@@ -1,29 +1,5 @@
-
-(eil51: 426, lin105: 14379, pcb442: 50778) best cases;
-
-Average tour length, runtime, success rate out of 20 run
-
-5 element OF ------Hill-climbing------------
-representation of solution: Series of coordinate of cities according to traveling order
-
-evaluation:
-total distance
-
-neighbourhood function: 
-swap traveling order of two cities
-
-neighbourhood search strategy: 
-###find the two city that has the longest side
-
-acceptance criterion: 
-#When no neighbour has shorter distance
-
-
-
-before deciding the temperature function, I made a little observation about how many iteration sa will run. It turns out to be 
-around 90~140.
-
-
+(eil51: 426, lin105: 14379, pcb442: 50778) 
+Average tour length, total runtime, best solution out of 20 run
 
 my best =>
 hill climbing => eil51.tsp
@@ -183,46 +159,73 @@ total execution time: 329.874630
 tabu search => eil51.tsp with 500,000 run
 ---------------------
 Final distance: 426
-total execution time: 6.531686
 Final distance: 426
-total execution time: 6.158065
 Final distance: 426
-total execution time: 6.121706
 Final distance: 426
-total execution time: 6.135654
 Final distance: 426
-total execution time: 6.197501
 Final distance: 426
-total execution time: 6.293847
 Final distance: 426
-total execution time: 6.190251
 Final distance: 426
-total execution time: 6.084505
 Final distance: 426
-total execution time: 6.159879
 Final distance: 426
-total execution time: 6.118133
 Final distance: 426
-total execution time: 6.258205
 Final distance: 426
-total execution time: 6.140270
 Final distance: 426
-total execution time: 6.312473
 Final distance: 426
-total execution time: 6.109140
 Final distance: 426
-total execution time: 6.131806
 Final distance: 426
-total execution time: 6.354278
 Final distance: 426
-total execution time: 6.535149
 Final distance: 426
-total execution time: 6.271263
 Final distance: 426
-total execution time: 6.209526
 Final distance: 426
-total execution time: 6.155149
-
+min=426 avg=426.000000
+total execution time: 120.158065
 
 tabu search => lin105.tsp
 ---------------------------
+Final distance: 15082
+Final distance: 14533
+Final distance: 15223
+Final distance: 14701
+Final distance: 15173
+Final distance: 14379
+Final distance: 14456
+Final distance: 14511
+Final distance: 14504
+Final distance: 14999
+Final distance: 15087
+Final distance: 15124
+Final distance: 14379
+Final distance: 14613
+Final distance: 15234
+Final distance: 14869
+Final distance: 14860
+Final distance: 14910
+Final distance: 14928
+Final distance: 15286
+min=14379 avg=14842.550000
+total execution time: 4449.80
+
+tabu search => pcb442.tsp
+Final distance: 54737
+Final distance: 54278
+Final distance: 53637
+Final distance: 55573
+Final distance: 55624
+Final distance: 55609
+Final distance: 54134
+Final distance: 56270
+Final distance: 54376
+Final distance: 55803
+Final distance: 54750
+Final distance: 55064
+Final distance: 56130
+Final distance: 55514
+Final distance: 53642
+Final distance: 55058
+Final distance: 55853
+Final distance: 54994
+Final distance: 55749
+Final distance: 56047
+min=53637 avg=55142.100000
+total execution time: 13059.970000
