@@ -17,8 +17,8 @@ Average tour length, total runtime, best solution out of 20 run
 my best =>
 hill climbing => eil51.tsp
 ---------------------
-min=432 avg=447.399994
-total execution time: 0.006962
+min=432 avg=447.399994  
+total execution time: 0.006962  
 * Final distance: 453
 * Final distance: 437
 * Final distance: 435
@@ -87,9 +87,9 @@ hill climbing => pcb442.tsp
 * Final distance: 54102
 * Final distance: 54227
 * Final distance: 54841
-* Final distance: 53873
-min=53088 avg=54832.000000
-total execution time: 8.057427
+* Final distance: 53873  
+min=53088 avg=54832.000000  
+total execution time: 8.057427  
 
 
 simulated annealing => eil51.tsp
@@ -113,9 +113,9 @@ simulated annealing => eil51.tsp
 * Final distance: 431
 * Final distance: 437
 * Final distance: 431
-* Final distance: 433
-min=426 avg=436.600006
-total execution time: 0.684922
+* Final distance: 433  
+min=426 avg=436.600006  
+total execution time: 0.684922  
 
 simulated annealing => lin105.tsp
 ---------------------
@@ -138,9 +138,9 @@ simulated annealing => lin105.tsp
 * Final distance: 14379
 * Final distance: 14548
 * Final distance: 14442
-* Final distance: 14460
-min=14379 avg=14443.099609
-total execution time: 19.930910
+* Final distance: 14460  
+min=14379 avg=14443.099609  
+total execution time: 19.930910  
 
 
 simulated annealing => pcb442.tsp
@@ -164,9 +164,9 @@ simulated annealing => pcb442.tsp
 * Final distance: 51753
 * Final distance: 51574
 * Final distance: 51196
-* Final distance: 51308
-min=51064 avg=51554.750000
-total execution time: 329.874630
+* Final distance: 51308  
+min=51064 avg=51554.750000  
+total execution time: 329.874630  
 
 
 tabu search => eil51.tsp with 500,000 run
@@ -190,9 +190,9 @@ tabu search => eil51.tsp with 500,000 run
 * Final distance: 426
 * Final distance: 426
 * Final distance: 426
-* Final distance: 426
-min=426 avg=426.000000
-total execution time: 120.158065
+* Final distance: 426  
+min=426 avg=426.000000  
+total execution time: 120.158065  
 
 tabu search => lin105.tsp
 ---------------------------
@@ -215,9 +215,9 @@ tabu search => lin105.tsp
 * Final distance: 14860
 * Final distance: 14910
 * Final distance: 14928
-* Final distance: 15286
-min=14379 avg=14842.550000
-total execution time: 4449.80
+* Final distance: 15286  
+min=14379 avg=14842.550000  
+total execution time: 4449.80  
 
 tabu search => pcb442.tsp
 * Final distance: 54737
@@ -239,6 +239,6 @@ tabu search => pcb442.tsp
 * Final distance: 55853
 * Final distance: 54994
 * Final distance: 55749
-* Final distance: 56047
-min=53637 avg=55142.100000
-total execution time: 13059.970000
+* Final distance: 56047  
+min=53637 avg=55142.100000  
+total execution time: 13059.970000  
