@@ -1,4 +1,10 @@
 # Hill climbing, simulated annealing and Tabu search practice
+This is a homework of meta-heuristic course.
+We practice to use Hill climbing, simulated annealing and Tabu search to solve the TSP problem.
+The number in each testfile indicate the number of cities.
+
+Result is shown as below:
+
 (eil51: 426, lin105: 14379, pcb442: 50778) 
 Average tour length, total runtime, best solution out of 20 run
 
